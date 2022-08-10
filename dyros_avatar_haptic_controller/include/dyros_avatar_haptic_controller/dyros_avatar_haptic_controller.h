@@ -25,7 +25,7 @@
 
 class DyrosAvatarHapticController{
     public:
-        DyrosAvatarHapticController(ros::NodeHandle &nh, DataContainer &dc, int control_mode);
+        DyrosAvatarHapticController(ros::NodeHandle &nh, DataContainer &dc, int control_mode, std::mutex &m_dc);
         ~DyrosAvatarHapticController();
         void compute();
         void updateKinematicsDynamics();
@@ -44,7 +44,7 @@ class DyrosAvatarHapticController{
         Eigen::Vector6d q_dot_mode_init_;
         Eigen::Isometry3d x_mode_init_;
 
-        std::mutex m_dc_;
+        std::mutex &m_dc_;
 
         DataContainer &dc_;
 

@@ -1,6 +1,6 @@
 #include "dyros_avatar_haptic_controller/mujoco_interface.h"
 
-MujocoInterface::MujocoInterface(ros::NodeHandle &nh, DataContainer &dc): dc_(dc)
+MujocoInterface::MujocoInterface(ros::NodeHandle &nh, DataContainer &dc, std::mutex &m_dc): dc_(dc), m_dc_(m_dc)
 {
     mujoco_sim_status_sub_ = nh.subscribe("/mujoco_ros_interface/sim_status", 1, &MujocoInterface::simStatusCallback, this, ros::TransportHints().tcpNoDelay(true));
     mujoco_joint_set_pub_ = nh.advertise<mujoco_ros_msgs::JointSet>("/mujoco_ros_interface/joint_set", 100);
@@ -54,6 +54,7 @@ void MujocoInterface::simStatusCallback(const mujoco_ros_msgs::SimStatusConstPtr
     }
     else
     {
+        m_dc_.lock();
         for (int j=0; j<dc_.num_dof_; j++)
         {
             dc_.q_[j] = msg->position[j];
@@ -70,6 +71,7 @@ void MujocoInterface::simStatusCallback(const mujoco_ros_msgs::SimStatusConstPtr
                 }
         }
         dc_.sim_time_ = msg->time;
+        m_dc_.unlock();
     }
 }
 

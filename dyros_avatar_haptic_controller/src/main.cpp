@@ -18,8 +18,9 @@ int main(int argc, char **argv)
 
     int control_mode = TorqueControl;
 
-    MujocoInterface mujoco_interface(nh, dc);
-    DyrosAvatarHapticController dyros_avatar_haptic_controller(nh, dc, control_mode);
+    std::mutex m_dc;
+    MujocoInterface mujoco_interface(nh, dc, std::ref(m_dc));
+    DyrosAvatarHapticController dyros_avatar_haptic_controller(nh, dc, control_mode, std::ref(m_dc));
 
     std::thread thread[3];
     thread[0] = std::thread(&MujocoInterface::stateUpdate, &mujoco_interface);

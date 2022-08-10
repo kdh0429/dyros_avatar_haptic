@@ -1,6 +1,6 @@
 #include "dyros_avatar_haptic_controller/dyros_avatar_haptic_controller.h"
 
-DyrosAvatarHapticController::DyrosAvatarHapticController(ros::NodeHandle &nh, DataContainer &dc, int control_mode) : dc_(dc)
+DyrosAvatarHapticController::DyrosAvatarHapticController(ros::NodeHandle &nh, DataContainer &dc, int control_mode, std::mutex &m_dc) : dc_(dc), m_dc_(m_dc)
 {
     if (control_mode == 0)
         dc_.sim_mode_ = "position";
@@ -38,6 +38,8 @@ void DyrosAvatarHapticController::compute()
                 q_init_ << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
                 m_dc_.unlock();
 
+                kp.setZero();
+                kv.setZero();
                 kp.diagonal() << 400, 400, 400, 400, 400, 400;
                 kv.diagonal() << 40, 40, 40, 40, 40, 40;
 
@@ -115,10 +117,10 @@ void DyrosAvatarHapticController::updateKinematicsDynamics()
 {
     static const int BODY_ID = robot_.GetBodyId("R6v3_1");
 
-    // x_.translation().setZero();
-    // x_.linear().setZero();
-    // x_.translation() = RigidBodyDynamics::CalcBodyToBaseCoordinates(robot_, q_, BODY_ID, Eigen::Vector3d(0.0, 0.0, 0.0), true);
-    // x_.linear() = RigidBodyDynamics::CalcBodyWorldOrientation(robot_, q_, BODY_ID, true).transpose();
+    x_.translation().setZero();
+    x_.linear().setZero();
+    x_.translation() = RigidBodyDynamics::CalcBodyToBaseCoordinates(robot_, q_, BODY_ID, Eigen::Vector3d(0.0, 0.0, 0.0), true);
+    x_.linear() = RigidBodyDynamics::CalcBodyWorldOrientation(robot_, q_, BODY_ID, true).transpose();
     
     // j_temp_.setZero();
     // RigidBodyDynamics::CalcPointJacobian6D(robot_, q_, BODY_ID, Eigen::Vector3d(0.0, 0.0, 0.0), j_temp_, true);
@@ -208,7 +210,6 @@ void DyrosAvatarHapticController::computeControlInput()
             q_desired_(i) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, q_mode_init_(i), q_init_(i), 0.0, 0.0);
             q_dot_desired_(i) = cubicDot(cur_time_, mode_init_time_, mode_init_time_+traj_duration, q_mode_init_(i), q_init_(i), 0.0, 0.0);
         }
-        std::cout << "q_desired_: " << q_desired_.transpose() << ", q_dot_desired_: " << q_dot_desired_.transpose() << std::endl;
         control_input_ = kp * (q_desired_ - q_) +  kv * (q_dot_desired_ - q_dot_) + non_linear_;
     }
     else if (mode_ == MODE_FORCE)

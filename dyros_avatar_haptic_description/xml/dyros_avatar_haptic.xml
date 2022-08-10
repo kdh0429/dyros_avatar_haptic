@@ -71,11 +71,15 @@
     </worldbody>
 
     <actuator>
-        <motor name="Prismatic1" joint="Pris1" ctrlrange="-100 100"/>
+        <motor name="Prismatic1" joint="Pris1" ctrlrange="-500 500"/>
         <motor name="Revolute2" joint="Rev2" ctrlrange="-100 100"/>
         <motor name="Revolute3" joint="Rev3" ctrlrange="-100 100"/>
         <motor name="Revolute4" joint="Rev4" ctrlrange="-100 100"/>
         <motor name="Revolute5" joint="Rev5" ctrlrange="-100 100"/>
         <motor name="Revolute6" joint="Rev6" ctrlrange="-100 100"/>
     </actuator>
+
+    <keyframe>
+        <key name="front" time="0" qpos ="0.5 0.8 -1.6 0.8 0.0 -1.57"/>
+    </keyframe>
 </mujoco>
