@@ -81,7 +81,8 @@ void MujocoInterface::sendCommand(int control_mode)
     while (ros::ok())
     {
         if (!is_first_callback)
-        {                
+        {         
+            m_dc_.lock();    
             if (control_mode == 1)
             {
                 if (dc_.sim_mode_ == "torque")
@@ -118,6 +119,7 @@ void MujocoInterface::sendCommand(int control_mode)
             mujoco_joint_set_msg_.header.stamp = ros::Time::now();
             mujoco_joint_set_msg_.time = dc_.sim_time_;
             mujoco_joint_set_pub_.publish(mujoco_joint_set_msg_);
+            m_dc_.unlock();
         }
 
         r.sleep();

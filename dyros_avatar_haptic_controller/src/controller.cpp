@@ -35,7 +35,7 @@ void DyrosAvatarHapticController::compute()
                 is_init_ = true;
                 m_dc_.lock();
                 sim_time_ = dc_.sim_time_;
-                q_init_ << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+                q_init_ << 0.1, 0.8, -1.6, 0.8, 0.0, -1.57;
                 m_dc_.unlock();
 
                 kp.setZero();
@@ -54,8 +54,16 @@ void DyrosAvatarHapticController::compute()
                 A_.setZero();
                 C_.resize(dc_.num_dof_, dc_.num_dof_);
                 C_.setZero();
+                C_T_.resize(dc_.num_dof_, dc_.num_dof_);
+                C_T_.setZero();
                 Lambda_.resize(6,6);
                 Lambda_.setZero();
+
+                // MOB
+                integral_term_mob_.setZero();
+                residual_mob_.setZero();
+                K_mob_.setZero();
+                K_mob_.diagonal() << 100.0, 100.0, 100.0, 100.0, 100.0, 100.0;
                 
                 init_time_ = ros::Time::now().toSec();
             }
@@ -92,6 +100,11 @@ void DyrosAvatarHapticController::compute()
                 x_mode_init_ = x_;
                 control_input_init_ = control_input_;
 
+                F_I_.setZero();
+
+                integral_term_mob_.setZero();
+                residual_mob_.setZero();
+
                 std::cout << "Mode Changed to: ";   //   f:102, h: 104, s: 115
                 switch(mode_)
                 {
@@ -122,89 +135,34 @@ void DyrosAvatarHapticController::updateKinematicsDynamics()
     x_.translation() = RigidBodyDynamics::CalcBodyToBaseCoordinates(robot_, q_, BODY_ID, Eigen::Vector3d(0.0, 0.0, 0.0), true);
     x_.linear() = RigidBodyDynamics::CalcBodyWorldOrientation(robot_, q_, BODY_ID, true).transpose();
     
-    // j_temp_.setZero();
-    // RigidBodyDynamics::CalcPointJacobian6D(robot_, q_, BODY_ID, Eigen::Vector3d(0.0, 0.0, 0.0), j_temp_, true);
-    // j_.setZero();
-    // for (int i = 0; i<2; i++)
-	// {
-	// 	j_.block<3, 6>(i * 3, 0) = j_temp_.block<3, 6>(3 - i * 3, 0);
-	// }    
+    j_temp_.setZero();
+    RigidBodyDynamics::CalcPointJacobian6D(robot_, q_, BODY_ID, Eigen::Vector3d(0.0, 0.0, 0.0), j_temp_, true);
+    j_.setZero();
+    for (int i = 0; i<2; i++)
+	{
+		j_.block<3, 6>(i * 3, 0) = j_temp_.block<3, 6>(3 - i * 3, 0);
+	}    
 
-    // x_dot_ = j_ * q_dot_;
+    x_dot_ = j_ * q_dot_;
 
     non_linear_.setZero();
     RigidBodyDynamics::NonlinearEffects(robot_, q_, q_dot_, non_linear_);
 
-    // A_.setZero();
-    // RigidBodyDynamics::CompositeRigidBodyAlgorithm(robot_, q_, A_, true);
+    A_.setZero();
+    RigidBodyDynamics::CompositeRigidBodyAlgorithm(robot_, q_, A_, true);
 
-    // Lambda_ = (j_ * A_.inverse() * j_.transpose()).inverse();
+    C_ = getC(q_, q_dot_);
+    C_T_ = C_.transpose();
+
+    Lambda_ = (j_ * A_.inverse() * j_.transpose()).inverse();
 }
 
 void DyrosAvatarHapticController::computeControlInput()
 {
-    // double traj_duration = 5.0;
-
-    // Eigen::VectorXd f_star;
-    // f_star.resize(6);
-
-    // // Position control y, z
-    // x_target_.translation() << 0.3, 0.0, 0.8;
-    // x_target_.linear() << 0.0, 0.0, 1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0.0;
-
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     x_desired_.translation()(i) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, x_mode_init_.translation()(i), x_target_.translation()(i), 0.0, 0.0);
-    //     x_dot_desired_(i) = cubicDot(cur_time_, mode_init_time_, mode_init_time_+traj_duration, x_mode_init_.translation()(i), x_target_.translation()(i), 0.0, 0.0);
-    // }
-    
-    // x_desired_.linear() = rotationCubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, x_mode_init_.linear(), x_target_.linear()); 
-    // x_dot_desired_.segment(3,3) = rotationCubicDot(cur_time_, mode_init_time_, mode_init_time_+traj_duration, x_mode_init_.linear(), x_target_.linear()); 
-
-    // Eigen::VectorXd x_error;
-    // x_error.resize(6);
-    // x_error.setZero();
-    // Eigen::VectorXd x_dot_error;
-    // x_dot_error.resize(6);
-    // x_dot_error.setZero();
-
-    // x_error.segment(0,3) = x_desired_.translation() - x_.translation();
-    // x_error.segment(3,3) = -getPhi(x_.linear(), x_desired_.linear());
-    // x_dot_error.segment(0,3)= x_dot_desired_.segment(0,3) - x_dot_.segment(0,3);
-    // x_dot_error.segment(3,3)= x_dot_desired_.segment(3,3) - x_dot_.segment(3,3);
-
-    // f_star = kp_task_*x_error +kv_task_*x_dot_error;
-
-    // // Force control x
-    // f_d_x_ = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, estimated_ext_force_init_(0), 40.0, 0.0, 0.0);
-    // double k_p_force = 0.05;
-    // double k_v_force = 0.001;
-    
-    // f_star(0) = k_p_force*(f_d_x_ - estimated_ext_force_(0)) + k_v_force*(estimated_ext_force_(0) - estimated_ext_force_pre_(0))/hz_;
-    
-    // estimated_ext_force_pre_ = estimated_ext_force_;
-
-    // // Eigen::VectorXd F_d;
-    // // F_d.resize(6);
-    // // F_d.setZero();
-    // // F_d(0) = f_d_x_;
-
-    // // control_input_ = j_.transpose()*(Lambda_*f_star + F_d) + non_linear_;
-
-    // f_star(0) = 0.0;
-    // f_I_ = f_I_ + 1.0 * (f_d_x_ - estimated_ext_force_(0)) / hz_;
-    
-
-    // Eigen::VectorXd F_d;
-    // F_d.resize(6);
-    // F_d.setZero();
-    // F_d(0) = f_d_x_ + f_I_;
-    
-    // control_input_ = j_.transpose()*(Lambda_*f_star + F_d) + non_linear_;
 
     if (mode_ == MODE_HOME)
     {
-        double traj_duration = 3.0;
+        double traj_duration = 5.0;
         for (int i = 0; i < dc_.num_dof_; i++)
         {
             q_desired_(i) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, q_mode_init_(i), q_init_(i), 0.0, 0.0);
@@ -214,7 +172,13 @@ void DyrosAvatarHapticController::computeControlInput()
     }
     else if (mode_ == MODE_FORCE)
     {
-        control_input_ =  non_linear_;
+        computeMOB();
+        F_d_ << 10.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+        Eigen::Vector6d F_;
+        F_I_ = F_I_ + 0.2*(F_d_ - residual_mob_) / hz_;
+        F_ = 0.1*(F_d_ - residual_mob_) + F_I_;
+
+        control_input_ = j_.transpose()*F_ + non_linear_;
     }
     else if (mode_ == MODE_STOP)
     {
@@ -230,6 +194,61 @@ void DyrosAvatarHapticController::computeControlInput()
     }
     
     dc_.control_input_ = control_input_; 
+}
+
+Eigen::Matrix6d DyrosAvatarHapticController::getC(Eigen::Vector6d q, Eigen::Vector6d q_dot){
+    double h = 2e-12;
+
+    Eigen::VectorXd q_new;
+    q_new.resize(dc_.num_dof_);
+    
+    Eigen::Matrix6d C, C1, C2;
+    C.setZero();
+    C1.setZero();
+    C2.setZero();
+
+    Eigen::MatrixXd A(dc_.num_dof_, dc_.num_dof_), A_new(dc_.num_dof_, dc_.num_dof_);
+    Eigen::MatrixXd m[dc_.num_dof_];
+    double b[dc_.num_dof_][dc_.num_dof_][dc_.num_dof_];
+
+    for (int i = 0; i < dc_.num_dof_; i++)
+    {
+        q_new = q;
+        q_new(i) += h;
+
+        A.setZero();
+        A_new.setZero();
+
+        RigidBodyDynamics::CompositeRigidBodyAlgorithm(robot_, q, A, true);
+        RigidBodyDynamics::CompositeRigidBodyAlgorithm(robot_, q_new, A_new, true);
+
+        m[i].resize(dc_.num_dof_, dc_.num_dof_);
+        m[i] = (A_new - A) / h;
+    }
+
+    for (int i = 0; i < dc_.num_dof_; i++)
+        for (int j = 0; j < dc_.num_dof_; j++)
+            for (int k = 0; k < dc_.num_dof_; k++)
+                b[i][j][k] = 0.5 * (m[k](i, j) + m[j](i, k) - m[i](j, k));
+
+
+    for (int i = 0; i < dc_.num_dof_; i++)
+        for (int j = 0; j < dc_.num_dof_; j++)
+            C1(i, j) = b[i][j][j] * q_dot(j);
+
+    for (int k = 0; k < dc_.num_dof_; k++)
+        for (int j = 0; j < dc_.num_dof_; j++)
+            for (int i = 1 + j; i < dc_.num_dof_; i++)
+            C2(k, j) += 2.0 * b[k][j][i] * q_dot(i);
+    C = C1 + C2;
+
+    return C;
+}
+
+Eigen::Vector6d DyrosAvatarHapticController::computeMOB()
+{ 
+    integral_term_mob_ = integral_term_mob_ + (control_input_ + C_T_*q_dot_ - non_linear_ - residual_mob_)/hz_;
+    residual_mob_ = K_mob_ * (integral_term_mob_ - A_*q_dot_);
 }
 
 void DyrosAvatarHapticController::printData()

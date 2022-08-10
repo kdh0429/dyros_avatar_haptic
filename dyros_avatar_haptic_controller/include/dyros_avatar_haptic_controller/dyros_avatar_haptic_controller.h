@@ -31,6 +31,8 @@ class DyrosAvatarHapticController{
         void updateKinematicsDynamics();
         void computeControlInput();
         void printData();
+        Eigen::Matrix6d getC(Eigen::Vector6d q, Eigen::Vector6d q_dot);
+        Eigen::Vector6d computeMOB();
 
     private:
         double hz_ = 2000;
@@ -79,6 +81,9 @@ class DyrosAvatarHapticController{
         Eigen::Matrix6d kv, kp;
         Eigen::Matrix6d kv_task_, kp_task_;
 
+        Eigen::Vector6d F_I_;
+        Eigen::Vector6d F_d_;
+
         Eigen::Vector6d control_input_;
         Eigen::Vector6d control_input_init_;
 
@@ -87,8 +92,14 @@ class DyrosAvatarHapticController{
         Eigen::VectorXd non_linear_;
         Eigen::MatrixXd A_;
         Eigen::MatrixXd C_;
+        Eigen::MatrixXd C_T_;
         Eigen::VectorXd g_;
         
         Eigen::MatrixXd Lambda_;
+
+        // MOB
+        Eigen::Vector6d integral_term_mob_;
+        Eigen::Vector6d residual_mob_;
+        Eigen::Matrix6d K_mob_;
 
 };
