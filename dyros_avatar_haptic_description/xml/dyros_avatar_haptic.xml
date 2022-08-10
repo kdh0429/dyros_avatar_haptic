@@ -1,0 +1,63 @@
+<mujoco model="dyros_avatar_haptic">
+    <compiler angle="radian" meshdir="../meshes/" />
+    <size njmax="500" nconmax="100" />
+    <asset>
+        <mesh name="R0v2_1_reduced" file="R0v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R1v2_1_reduced" file="R1v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R2v2_1_reduced" file="R2v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R3v2_1_reduced" file="R3v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R4v2_1_reduced" file="R4v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R5v2_1" file="R5v2_1.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R6v3_1" file="R6v3_1.stl" scale="0.001 0.001 0.001" />
+
+        <material name='MatPlane' reflectance='0.3' />
+    </asset>
+    <worldbody>
+        <geom name="ground" type="plane" pos="0 0 0" size="30 30 .05" rgba="0.7 0.6 0.5 1" material="MatPlane" group="3"/>      
+        <light directional="true" diffuse=".8 .8 .8" pos="0 0 10" dir="0 0 -10"/>
+        <light directional="true" diffuse=".5 .5 .5" pos="10 0 0" dir="-10 0 0"/>
+
+        <body name="R0v2_1" pos="0 0 1.0">
+            <inertial pos="0.002224363691248139 -0.00843604486559863 -0.5178558077892146" quat="0.772365 -0.0997807 -0.0701514 0.623358" mass="96.30275269300822" fullinertia="27.599897 26.791263 3.404109 -0.514111 -1.896007 -1.207392" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R0v2_1_reduced" />
+            <!-- <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="R0v2_1_reduced" /> -->
+
+            <body name="R1v2_1" pos="0.0609 -0.0041 0.1222">
+                <inertial pos="0.293067 -0.00512515 -0.443312" quat="0.772365 -0.0997807 -0.0701514 0.623358" mass="25.0511" diaginertia="9.33808 8.93957 0.436731" />
+                <joint name="Rev1" pos="0 0 0" axis="0 0 1" type="slide" limited="true" range="-3.14159 3.14159" />
+                <geom pos="-0.0609 0.0041 -0.1222" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R1v2_1_reduced" />
+                <geom pos="-0.0609 0.0041 -0.1222" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R1v2_1_reduced" />
+                <body name="R2v2_1" pos="0.258548 0.0640394 0.3013">
+                    <inertial pos="0.3579 -0.0420162 0.00348253" quat="0.525152 0.496441 0.513263 0.46295" mass="3.7157" diaginertia="0.0920441 0.090836 0.00499491" />
+                    <joint name="Rev2" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" />
+                    <geom pos="-0.319448 -0.0599394 -0.4235" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R2v2_1_reduced" />
+                    <geom pos="-0.319448 -0.0599394 -0.4235" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R2v2_1_reduced" />
+                    <body name="R3v2_1" pos="0.497989 -0.0451167 0.0545">
+                        <inertial pos="0.327828 0.123153 0.021506" quat="-0.192071 0.682705 0.152391 0.688331" mass="2.30366" diaginertia="0.064722 0.0617848 0.00582615" />
+                        <joint name="Rev3" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" />
+                        <geom pos="-0.817437 -0.0148228 -0.478" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R3v2_1_reduced" />
+                        <geom pos="-0.817437 -0.0148228 -0.478" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R3v2_1_reduced" />
+                        <body name="R4v2_1" pos="0.410203 0.185051 -0.0103">
+                            <inertial pos="-0.000231418 -0.205505 -0.338006" quat="0.988466 -0.151442 9.48549e-05 -0.000534243" mass="2.43882" diaginertia="0.108462 0.102928 0.00734876" />
+                            <joint name="Rev4" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" />
+                            <geom pos="-1.22764 -0.199873 -0.4677" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R4v2_1_reduced" />
+                            <geom pos="-1.22764 -0.199873 -0.4677" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R4v2_1_reduced" />
+                            <body name="R5v2_1" pos="-0.000226496 -0.2067 -0.4815">
+                                <inertial pos="0.281506 0.140693 -2.0404e-05" quat="-0.199542 0.678423 0.199481 0.67833" mass="2.14943" diaginertia="0.048989 0.0449838 0.00508518" />
+                                <joint name="Rev5" pos="0 0 0" axis="0.00109577 0.999999 0" limited="true" range="-3.14159 3.14159" />
+                                <geom pos="-1.22741 0.00682649 0.0138" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R5v2_1" />
+                                <geom pos="-1.22741 0.00682649 0.0138" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R5v2_1" />
+                                <body name="R6v3_1" pos="0.308225 0.204862 0">
+                                    <inertial pos="-0.2518 -0.0638602 0.0135316" quat="-0.0299566 0.741723 -0.123655 0.658528" mass="1.82429" diaginertia="0.0220703 0.0180099 0.00719679" />
+                                    <joint name="Rev6" pos="0 0 0" axis="0.999999 -0.00109577 0" limited="true" range="-3.14159 3.14159" />
+                                    <geom pos="-1.53564 -0.198036 0.0138" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R6v3_1" />
+                                    <geom pos="-1.53564 -0.198036 0.0138" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R6v3_1" />
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+</mujoco>

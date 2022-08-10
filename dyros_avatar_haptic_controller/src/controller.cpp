@@ -8,7 +8,7 @@ DyrosAvatarHapticController::DyrosAvatarHapticController(ros::NodeHandle &nh, Da
         dc_.sim_mode_ = "torque";
 
     // RBDL
-    std::string urdf_name = ros::package::getPath("dyros_avatar_haptic_description") + "/robots/dyros_avatar_haptic.urdf";
+    std::string urdf_name = ros::package::getPath("dyros_avatar_haptic_description") + "/urdf/dyros_avatar_haptic.urdf";
     std::cout<<"Model name: " << urdf_name <<std::endl;
     RigidBodyDynamics::Addons::URDFReadFromFile(urdf_name.c_str(), &robot_, false, false);
 
