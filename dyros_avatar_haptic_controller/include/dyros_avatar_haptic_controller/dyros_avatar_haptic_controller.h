@@ -19,10 +19,8 @@
 
 #include <std_msgs/Float32MultiArray.h>
 
-# define MODE_INIT 105
-# define MODE_HOME 104
-# define MODE_RANDOM 114
 # define MODE_FORCE 102
+# define MODE_HOME 104
 # define MODE_STOP 115
 
 class DyrosAvatarHapticController{
@@ -42,15 +40,11 @@ class DyrosAvatarHapticController{
 
         int mode_ = 0;
         double mode_init_time_ =  0.0;
-        Eigen::VectorXd q_mode_init_;
-        Eigen::VectorXd q_dot_mode_init_;
+        Eigen::Vector6d q_mode_init_;
+        Eigen::Vector6d q_dot_mode_init_;
         Eigen::Isometry3d x_mode_init_;
 
         std::mutex m_dc_;
-        std::mutex m_ci_;
-        std::mutex m_ext_;
-        std::mutex m_buffer_;
-        std::mutex m_rbdl_;
 
         DataContainer &dc_;
 
@@ -62,30 +56,31 @@ class DyrosAvatarHapticController{
         std::ofstream writeFile;
 
         // Robot State
-        Eigen::Vector7d q_;
-        Eigen::Vector7d q_dot_;
-        Eigen::Vector7d effort_;
+        Eigen::Vector6d q_;
+        Eigen::Vector6d q_init_;
+        Eigen::Vector6d q_dot_;
+        Eigen::Vector6d effort_;
 
         Eigen::Isometry3d x_;
-        Eigen::VectorXd x_dot_;
+        Eigen::Vector6d x_dot_;
         Eigen::MatrixXd j_temp_;
         Eigen::MatrixXd j_;
 
         // Control
-        Eigen::VectorXd q_ddot_desired_;
-        Eigen::VectorXd q_dot_desired_;
-        Eigen::VectorXd q_desired_;
+        Eigen::Vector6d q_ddot_desired_;
+        Eigen::Vector6d q_dot_desired_;
+        Eigen::Vector6d q_desired_;
 
         Eigen::Isometry3d x_target_;
         Eigen::Isometry3d x_desired_;
         Eigen::VectorXd x_dot_desired_;
         Eigen::Isometry3d x_ddot_desired_;
 
-        Eigen::MatrixXd kv, kp;
-        Eigen::MatrixXd kv_task_, kp_task_;
+        Eigen::Matrix6d kv, kp;
+        Eigen::Matrix6d kv_task_, kp_task_;
 
-        Eigen::VectorXd control_input_;
-        Eigen::Vector7d control_input_filtered_;
+        Eigen::Vector6d control_input_;
+        Eigen::Vector6d control_input_init_;
 
         // Kinematics & Dynamics
         RigidBodyDynamics::Model robot_;

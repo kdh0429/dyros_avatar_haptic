@@ -26,77 +26,94 @@ void DyrosAvatarHapticController::compute()
     ros::Rate r(hz_);
     while(ros::ok())
     {
-        // if (!dc_.is_first_callback)
-        // {
-        //     if (!is_init_)
-        //     {
-        //         // Robot State
+        if (!dc_.is_first_callback)
+        {
+            if (!is_init_)
+            {
+                // Robot State
 
-        //         is_init_ = true;
-        //     }
+                is_init_ = true;
+                m_dc_.lock();
+                sim_time_ = dc_.sim_time_;
+                q_init_ << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+                m_dc_.unlock();
 
-        //     if (is_init_)
-        //     {
-        //         cur_time_= ros::Time::now().toSec() - init_time_;
+                kp.diagonal() << 400, 400, 400, 400, 400, 400;
+                kv.diagonal() << 40, 40, 40, 40, 40, 40;
 
-        //         m_dc_.lock();
-        //         sim_time_ = dc_.sim_time_;
-        //         q_ = dc_.q_;
-        //         q_dot_ = dc_.q_dot_;
-        //         effort_ = dc_.effort_;
-        //         m_dc_.unlock();
+                j_temp_.resize(6, dc_.num_dof_);
+                j_temp_.setZero();
+                j_.resize(6, dc_.num_dof_);
+                j_.setZero();
 
-        //         updateKinematicsDynamics();
+                non_linear_.resize(dc_.num_dof_);
+                non_linear_.setZero();
+                A_.resize(dc_.num_dof_, dc_.num_dof_);
+                A_.setZero();
+                C_.resize(dc_.num_dof_, dc_.num_dof_);
+                C_.setZero();
+                Lambda_.resize(6,6);
+                Lambda_.setZero();
+                
+                init_time_ = ros::Time::now().toSec();
+            }
 
+            if (is_init_)
+            {
+                cur_time_= ros::Time::now().toSec() - init_time_;
 
-        //         computeControlInput();  
+                m_dc_.lock();
+                sim_time_ = dc_.sim_time_;
+                q_ = dc_.q_;
+                q_dot_ = dc_.q_dot_;
+                effort_ = dc_.effort_;
+                m_dc_.unlock();
 
-        //         // printData();            
+                updateKinematicsDynamics();
+
+                computeControlInput();  
+
+                // printData();            
  
 
-        //         pre_time_ = cur_time_;
-        //     }
+                pre_time_ = cur_time_;
+            }
 
-        //     if (_kbhit()) {
-        //         int ch = _getch();
-        //         _putch(ch);
-        //         mode_ = ch;
+            if (_kbhit()) {
+                int ch = _getch();
+                _putch(ch);
+                mode_ = ch;
 
-        //         mode_init_time_ = ros::Time::now().toSec() - init_time_;
-        //         q_mode_init_ = q_;
-        //         q_dot_mode_init_ = q_dot_;
-        //         x_mode_init_ = x_;
+                mode_init_time_ = ros::Time::now().toSec() - init_time_;
+                q_mode_init_ = q_;
+                q_dot_mode_init_ = q_dot_;
+                x_mode_init_ = x_;
+                control_input_init_ = control_input_;
 
-        //         std::cout << "Mode Changed to: ";   // i: 105, r: 114, m: 109, s: 115, f:102, h: 104
-        //         switch(mode_)
-        //         {
-        //             case(104):
-        //                 std::cout << "Home Pose" << std::endl;
-        //                 break;
-        //             case(105):
-        //                 std::cout<< "Init Pose" << std::endl;
-        //                 break;
-        //             case(114):
-        //                 std::cout<< "Random Trajectory" << std::endl;
-        //                 break;
-        //             case(102):
-        //                 std::cout << "Force Control" << std::endl;
-        //                 break;
-        //             case(115):
-        //                 std::cout << "Stop" << std::endl;
-        //                 break;
-        //         }
-        //     }
+                std::cout << "Mode Changed to: ";   //   f:102, h: 104, s: 115
+                switch(mode_)
+                {
+                    case(102):
+                        std::cout << "Force Control" << std::endl;
+                        break;
+                    case(104):
+                        std::cout << "Home Pose" << std::endl;
+                        break;
+                    case(115):
+                        std::cout << "Stop" << std::endl;
+                        break;
+                }
+            }
         ros::spinOnce();
-        // r.sleep();
-        // }
+        r.sleep();
+        }
     }
     close_keyboard();
 }
 
 void DyrosAvatarHapticController::updateKinematicsDynamics()
 {
-    // static const int BODY_ID = robot_.GetBodyId("panda_link7");
+    static const int BODY_ID = robot_.GetBodyId("R6v3_1");
 
     // x_.translation().setZero();
     // x_.linear().setZero();
@@ -108,18 +125,13 @@ void DyrosAvatarHapticController::updateKinematicsDynamics()
     // j_.setZero();
     // for (int i = 0; i<2; i++)
 	// {
-	// 	j_.block<3, 7>(i * 3, 0) = j_temp_.block<3, 7>(3 - i * 3, 0);
+	// 	j_.block<3, 6>(i * 3, 0) = j_temp_.block<3, 6>(3 - i * 3, 0);
 	// }    
 
     // x_dot_ = j_ * q_dot_;
 
-    // non_linear_.setZero();
-    // RigidBodyDynamics::NonlinearEffects(robot_, q_, q_dot_, non_linear_);
-
-    // g_.setZero();
-    // Eigen::Vector7d q_dot_zero;
-    // q_dot_zero.setZero();
-    // RigidBodyDynamics::NonlinearEffects(robot_, q_, q_dot_zero, g_);
+    non_linear_.setZero();
+    RigidBodyDynamics::NonlinearEffects(robot_, q_, q_dot_, non_linear_);
 
     // A_.setZero();
     // RigidBodyDynamics::CompositeRigidBodyAlgorithm(robot_, q_, A_, true);
@@ -187,6 +199,34 @@ void DyrosAvatarHapticController::computeControlInput()
     // F_d(0) = f_d_x_ + f_I_;
     
     // control_input_ = j_.transpose()*(Lambda_*f_star + F_d) + non_linear_;
+
+    if (mode_ == MODE_HOME)
+    {
+        double traj_duration = 3.0;
+        for (int i = 0; i < dc_.num_dof_; i++)
+        {
+            q_desired_(i) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, q_mode_init_(i), q_init_(i), 0.0, 0.0);
+            q_dot_desired_(i) = cubicDot(cur_time_, mode_init_time_, mode_init_time_+traj_duration, q_mode_init_(i), q_init_(i), 0.0, 0.0);
+        }
+        std::cout << "q_desired_: " << q_desired_.transpose() << ", q_dot_desired_: " << q_dot_desired_.transpose() << std::endl;
+        control_input_ = kp * (q_desired_ - q_) +  kv * (q_dot_desired_ - q_dot_) + non_linear_;
+    }
+    else if (mode_ == MODE_FORCE)
+    {
+        control_input_ =  non_linear_;
+    }
+    else if (mode_ == MODE_STOP)
+    {
+        double traj_duration = 3.0;
+        for (int i = 0; i < dc_.num_dof_; i++)
+        {
+            control_input_(i) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, control_input_init_(i), 0.0, 0.0, 0.0);
+        }
+    }
+    else
+    {
+        control_input_ =  non_linear_;
+    }
     
     dc_.control_input_ = control_input_; 
 }
