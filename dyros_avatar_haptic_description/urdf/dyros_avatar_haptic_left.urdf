@@ -1,0 +1,219 @@
+<?xml version="1.0" ?>
+<robot name="dyros_avatar_haptic">
+
+<mujoco>
+      <compiler 
+      meshdir="../meshes/" 
+      balanceinertia="true" 
+      discardvisual="false" />
+</mujoco>
+
+<material name="silver">
+  <color rgba="0.700 0.700 0.700 1.000"/>
+</material>
+
+<!-- <link name="base_link">
+</link>
+
+<joint name="base_footprint_joint" type="fixed">
+  <origin rpy="0 0 0" xyz="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="R0v2_1"/>
+</joint> -->
+
+<link name="L0v2_1">
+  <inertial>
+    <origin xyz="0.31538684426863983 -0.2826522922212561 0.5148629465865381" rpy="0 0 0"/>
+    <mass value="83.96706134148887"/>
+    <inertia ixx="52.816644" iyy="37.512956" izz="42.622482" ixy="19.274544" iyz="-7.311257" ixz="4.82036"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L0v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L0v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="L1v2_1">
+  <inertial>
+    <origin xyz="-0.011148116834790028 -0.01993865318088302 -1.1250333333265985" rpy="0 0 0"/>
+    <mass value="24.711500367364692"/>
+    <inertia ixx="24.181967" iyy="24.384944" izz="0.265506" ixy="0.049065" iyz="0.623654" ixz="-1.372701"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.15434484425638284 -0.04789605532138844 -1.1221999999997916" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L1v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.15434484425638284 -0.04789605532138844 -1.1221999999997916" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L1v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="L2v2_1">
+  <inertial>
+    <origin xyz="0.3671807675531784 0.04203849657933962 -0.011947287781814975" rpy="0 0 0"/>
+    <mass value="3.81569646652048"/>
+    <inertia ixx="0.056525" iyy="0.141466" izz="0.089168" ixy="-0.003682" iyz="-0.000293" ixz="-0.000244"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.4128145815272143 0.016325863951696943 -1.4042999999998396" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L2v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.4128145815272143 0.016325863951696943 -1.4042999999998396" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L2v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="L3v2_1">
+  <inertial>
+    <origin xyz="0.33087864817586465 -0.125228056241001 0.011629488873647897" rpy="0 0 0"/>
+    <mass value="2.2253234887304045"/>
+    <inertia ixx="0.031901" iyy="0.060168" izz="0.061446" ixy="0.022451" iyz="0.003481" ixz="-0.004599"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.9108357512310089 -0.028439239944659467 -1.4585999999999384" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L3v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.9108357512310089 -0.028439239944659467 -1.4585999999999384" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L3v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="L4v2_1">
+  <inertial>
+    <origin xyz="-0.001516643339102064 0.19924406379936704 -0.3476406556665341" rpy="0 0 0"/>
+    <mass value="2.383022203577908"/>
+    <inertia ixx="0.13763" iyy="0.111737" izz="0.029261" ixy="-0.00268" iyz="0.008741" ixz="-0.002779"/>
+  </inertial>
+  <visual>
+    <origin xyz="-1.320748211048668 0.15725412365844577 -1.4357999999999012" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L4v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-1.320748211048668 0.15725412365844577 -1.4357999999999012" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L4v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="L5v2_1">
+  <inertial>
+    <origin xyz="0.2728386992656229 -0.1296734670877175 -0.013712675388114826" rpy="0 0 0"/>
+    <mass value="1.9614501562414652"/>
+    <inertia ixx="0.043371" iyy="0.065245" izz="0.056744" ixy="0.021412" iyz="0.007629" ixz="-0.014915"/>
+  </inertial>
+  <visual>
+    <origin xyz="-1.3208426391568135 -0.04294585407215641 -0.9592999999999394" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L5v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-1.3208426391568135 -0.04294585407215641 -0.9592999999999394" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L5v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="EE">
+  <inertial>
+    <origin xyz="-0.21772762060217477 0.12457271488670181 -0.004581049927364966" rpy="0 0 0"/>
+    <mass value="0.5876479968624119"/>
+    <inertia ixx="0.006546" iyy="0.024761" izz="0.021623" ixy="0.000154" iyz="-0.001428" ixz="-0.00677"/>
+  </inertial>
+  <visual>
+    <origin xyz="-1.6227481774555241 0.15739656765764903 -0.9592999999999704" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L6v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-1.6227481774555241 0.15739656765764903 -0.9592999999999704" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://dyros_avatar_haptic_description/meshes/L6v2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="Rev1" type="prismatic">
+  <origin xyz="0.15434484425638284 0.04789605532138844 1.1221999999997916" rpy="0 0 0"/>
+  <parent link="L0v2_1"/>
+  <child link="L1v2_1"/>
+  <axis xyz="-1.9785965043687577e-13 4.98557253978501e-16 0.999999999999999"/>
+  <limit upper="3.14159" lower="-3.14159" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Rev2" type="revolute">
+  <origin xyz="0.25846973727083145 -0.06422191927308538 0.282100000000048" rpy="0 0 0"/>
+  <parent link="L1v2_1"/>
+  <child link="L2v2_1"/>
+  <axis xyz="-1.9809494050748165e-13 4.918921006832097e-16 0.9999999999999986"/>
+  <limit upper="3.14159" lower="-3.14159" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Rev3" type="revolute">
+  <origin xyz="0.4980211697037946 0.044765103896356406 0.054300000000098825" rpy="0 0 0"/>
+  <parent link="L2v2_1"/>
+  <child link="L3v2_1"/>
+  <axis xyz="1.9816330287697064e-13 -4.919243450884573e-16 -0.999999999999999"/>
+  <limit upper="3.14159" lower="-3.14159" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Rev4" type="revolute">
+  <origin xyz="0.409912459817659 -0.18569336360310523 -0.022800000000037235" rpy="0 0 0"/>
+  <parent link="L3v2_1"/>
+  <child link="L4v2_1"/>
+  <axis xyz="-1.264349999867203e-13 -1.5138091700230881e-13 -0.9999999999999986"/>
+  <limit upper="3.14159" lower="-3.14159" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Rev5" type="revolute">
+  <origin xyz="9.442810814563884e-05 0.20019997773060216 -0.47649999999996173" rpy="0 0 0"/>
+  <parent link="L4v2_1"/>
+  <child link="L5v2_1"/>
+  <axis xyz="-0.00047166887155364285 -0.9999998887642285 -7.445754955941802e-14"/>
+  <limit upper="3.14159" lower="-3.14159" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Rev6" type="revolute">
+  <origin xyz="0.3019055382987106 -0.20034242172980543 3.097522238704187e-14" rpy="0 0 0"/>
+  <parent link="L5v2_1"/>
+  <child link="EE"/>
+  <axis xyz="0.9999998887642307 -0.0004716688715537389 1.5182680658618058e-13"/>
+  <limit upper="3.14159" lower="-3.14159" effort="100" velocity="100"/>
+</joint>
+
+</robot>

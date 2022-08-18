@@ -31,10 +31,11 @@ class DyrosAvatarHapticController{
         void updateKinematicsDynamics();
         void computeControlInput();
         void printData();
-        Eigen::Matrix6d getC(Eigen::Vector6d q, Eigen::Vector6d q_dot);
+        Eigen::Matrix6d getC(Eigen::Vector6d q, Eigen::Vector6d q_dot, RigidBodyDynamics::Model robot_model);
         Eigen::Vector6d computeMOB();
 
     private:
+        const int dof_ = 6;
         double hz_ = 2000;
         double cur_time_;
         double pre_time_;
@@ -42,9 +43,6 @@ class DyrosAvatarHapticController{
 
         int mode_ = 0;
         double mode_init_time_ =  0.0;
-        Eigen::Vector6d q_mode_init_;
-        Eigen::Vector6d q_dot_mode_init_;
-        Eigen::Isometry3d x_mode_init_;
 
         std::mutex &m_dc_;
 
@@ -58,48 +56,60 @@ class DyrosAvatarHapticController{
         std::ofstream writeFile;
 
         // Robot State
-        Eigen::Vector6d q_;
-        Eigen::Vector6d q_init_;
-        Eigen::Vector6d q_dot_;
-        Eigen::Vector6d effort_;
+        struct RobotState
+        {
+            std::string id_;
+            Eigen::Vector6d q_mode_init_;
+            Eigen::Vector6d q_dot_mode_init_;
+            Eigen::Isometry3d x_mode_init_;
 
-        Eigen::Isometry3d x_;
-        Eigen::Vector6d x_dot_;
-        Eigen::MatrixXd j_temp_;
-        Eigen::MatrixXd j_;
+            Eigen::Vector6d q_;
+            Eigen::Vector6d q_init_;
+            Eigen::Vector6d q_dot_;
+            Eigen::Vector6d effort_;
 
-        // Control
-        Eigen::Vector6d q_ddot_desired_;
-        Eigen::Vector6d q_dot_desired_;
-        Eigen::Vector6d q_desired_;
+            Eigen::Isometry3d x_;
+            Eigen::Vector6d x_dot_;
+            Eigen::MatrixXd j_temp_;
+            Eigen::MatrixXd j_;
 
-        Eigen::Isometry3d x_target_;
-        Eigen::Isometry3d x_desired_;
-        Eigen::VectorXd x_dot_desired_;
-        Eigen::Isometry3d x_ddot_desired_;
+            // Control
+            Eigen::Vector6d q_ddot_desired_;
+            Eigen::Vector6d q_dot_desired_;
+            Eigen::Vector6d q_desired_;
 
-        Eigen::Matrix6d kv, kp;
-        Eigen::Matrix6d kv_task_, kp_task_;
+            Eigen::Isometry3d x_target_;
+            Eigen::Isometry3d x_desired_;
+            Eigen::VectorXd x_dot_desired_;
+            Eigen::Isometry3d x_ddot_desired_;
 
-        Eigen::Vector6d F_I_;
-        Eigen::Vector6d F_d_;
+            Eigen::Matrix6d kv, kp;
+            Eigen::Matrix6d kv_task_, kp_task_;
 
-        Eigen::Vector6d control_input_;
-        Eigen::Vector6d control_input_init_;
+            Eigen::Vector6d F_I_;
+            Eigen::Vector6d F_d_;
 
-        // Kinematics & Dynamics
-        RigidBodyDynamics::Model robot_;
-        Eigen::VectorXd non_linear_;
-        Eigen::MatrixXd A_;
-        Eigen::MatrixXd C_;
-        Eigen::MatrixXd C_T_;
-        Eigen::VectorXd g_;
-        
-        Eigen::MatrixXd Lambda_;
+            Eigen::Vector6d control_input_;
+            Eigen::Vector6d control_input_init_;
 
-        // MOB
-        Eigen::Vector6d integral_term_mob_;
-        Eigen::Vector6d residual_mob_;
-        Eigen::Matrix6d K_mob_;
+            // Kinematics & Dynamics
+            RigidBodyDynamics::Model robot_model;
+            RigidBodyDynamics::Model &robot_model_ = robot_model;
+            Eigen::VectorXd non_linear_;
+            Eigen::MatrixXd A_;
+            Eigen::MatrixXd C_;
+            Eigen::MatrixXd C_T_;
+            Eigen::VectorXd g_;
+            
+            Eigen::MatrixXd Lambda_;
 
+            // MOB
+            Eigen::Vector6d integral_term_mob_;
+            Eigen::Vector6d residual_mob_;
+            Eigen::Matrix6d K_mob_;
+        };
+        RobotState right_arm_;
+        RobotState left_arm_;
+
+        std::vector<RobotState*> robots_;
 };
