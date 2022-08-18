@@ -88,6 +88,8 @@ class DyrosAvatarHapticController{
 
             Eigen::Vector6d F_I_;
             Eigen::Vector6d F_d_;
+            double kp_force_ = 0.1;
+            double ki_force_ = 0.2;
 
             Eigen::Vector6d control_input_;
             Eigen::Vector6d control_input_init_;

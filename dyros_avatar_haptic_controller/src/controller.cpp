@@ -50,13 +50,13 @@ void DyrosAvatarHapticController::compute()
                         robot->q_init_ << 0.1, 0.8, -1.6, 0.8, 0.0, -1.57;
                     }
                     else{
-                        robot->q_init_ << 0.1, 0.8, 1.6, 0.8, 0.0, -1.57;
+                        robot->q_init_ << 0.1, 0.8, 1.6, -0.8, 0.0, 1.57;
                     }
 
                     robot->kp.setZero();
                     robot->kv.setZero();
                     robot->kp.diagonal() << 400, 400, 400, 400, 400, 400;
-                    robot->kv.diagonal() << 40, 40, 40, 40, 40, 40;
+                    robot->kv.diagonal() << 10, 10, 10, 10, 10, 10;
 
                     robot->j_temp_.resize(6, dof_);
                     robot->j_temp_.setZero();
@@ -201,10 +201,13 @@ void DyrosAvatarHapticController::computeControlInput()
         computeMOB();
         for (auto &robot: robots_)
         {
-            robot->F_d_ << 10.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+            double traj_duration = 2.0;
+            robot->F_d_.setZero();
+            robot->F_d_(0) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, 0.0, 1.0, 0.0, 0.0);
+
             Eigen::Vector6d F_;
-            robot->F_I_ = robot->F_I_ + 0.2*(robot->F_d_ - robot->residual_mob_) / hz_;
-            F_ = 0.1*(robot->F_d_ - robot->residual_mob_) + robot->F_I_;
+            robot->F_I_ = robot->F_I_ + robot->ki_force_*(robot->F_d_ - robot->residual_mob_) / hz_;
+            F_ = robot->kp_force_*(robot->F_d_ - robot->residual_mob_) + robot->F_I_;
 
             robot->control_input_ = robot->j_.transpose()*F_ + robot->non_linear_;
         }
@@ -227,7 +230,6 @@ void DyrosAvatarHapticController::computeControlInput()
             robot->control_input_ =  robot->non_linear_;
         }
     }
-    
 
     m_dc_.lock();
     dc_.control_input_.head(6) = right_arm_.control_input_; 
