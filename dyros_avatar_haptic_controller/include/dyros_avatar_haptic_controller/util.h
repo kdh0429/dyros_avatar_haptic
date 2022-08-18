@@ -291,3 +291,13 @@ const static Eigen::Vector3d rotationCubicDot(double time,
     double alpha = (2*3.1415*dt*cut_off_frequency) / (2*3.1415*dt*cut_off_frequency + 1);
     return alpha*input + (1-alpha)*prev;
   }
+
+static double minmax_cut(double val, double min_, double max_)
+  {
+    if (val < min_)
+      return min_;
+    else if (val > max_)
+      return max_;
+    else
+      return val;
+  }

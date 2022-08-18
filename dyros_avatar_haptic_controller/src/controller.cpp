@@ -203,10 +203,15 @@ void DyrosAvatarHapticController::computeControlInput()
         {
             double traj_duration = 2.0;
             robot->F_d_.setZero();
-            robot->F_d_(0) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, 0.0, 1.0, 0.0, 0.0);
+            robot->F_d_(0) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, 0.0, 10.0, 0.0, 0.0);
 
             Eigen::Vector6d F_;
             robot->F_I_ = robot->F_I_ + robot->ki_force_*(robot->F_d_ - robot->residual_mob_) / hz_;
+            // Integral Anti-Windup(saturation)
+            for (int i = 0; i <6; i++)
+            {
+                minmax_cut(robot->F_I_(i), -10.0, 10.0);
+            }
             F_ = robot->kp_force_*(robot->F_d_ - robot->residual_mob_) + robot->F_I_;
 
             robot->control_input_ = robot->j_.transpose()*F_ + robot->non_linear_;
