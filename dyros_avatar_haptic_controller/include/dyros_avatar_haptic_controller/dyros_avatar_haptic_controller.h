@@ -5,6 +5,8 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <ros/package.h>
+#include <std_msgs/Float32MultiArray.h>
+#include "tocabi_msgs/matrix_3_4.h"
 
 #include "dyros_avatar_haptic_controller/util.h"
 
@@ -27,6 +29,7 @@ class DyrosAvatarHapticController{
     public:
         DyrosAvatarHapticController(ros::NodeHandle &nh, DataContainer &dc, int control_mode, std::mutex &m_dc);
         ~DyrosAvatarHapticController();
+        void FTCallback(const std_msgs::Float32MultiArray::ConstPtr& msg);
         void compute();
         void updateKinematicsDynamics();
         void computeControlInput();
@@ -40,6 +43,8 @@ class DyrosAvatarHapticController{
         double cur_time_;
         double pre_time_;
         double init_time_;
+        
+        ros::Subscriber ft_sub_;
 
         int mode_ = 0;
         double mode_init_time_ =  0.0;
@@ -51,6 +56,7 @@ class DyrosAvatarHapticController{
         bool is_init_ = false;
 
         double sim_time_ = 0.0;
+
 
         bool is_write_ = false;
         std::ofstream writeFile;
@@ -68,7 +74,6 @@ class DyrosAvatarHapticController{
             Eigen::Vector6d q_dot_;
             Eigen::Vector6d effort_;
 
-
             // Control
             Eigen::Vector6d q_ddot_desired_;
             Eigen::Vector6d q_dot_desired_;
@@ -84,7 +89,7 @@ class DyrosAvatarHapticController{
 
             Eigen::Vector6d F_I_;
             Eigen::Vector6d F_d_;
-            double kp_force_ = 0.1;
+            double kp_force_ = 0.3;
             double ki_force_ = 0.2;
 
             Eigen::Vector6d control_input_;
@@ -110,6 +115,10 @@ class DyrosAvatarHapticController{
             Eigen::Vector6d integral_term_mob_;
             Eigen::Vector6d residual_mob_;
             Eigen::Matrix6d K_mob_;
+
+            // ROS
+            tocabi_msgs::matrix_3_4 hand_msg_;
+            ros::Publisher hand_pub_;
         };
         RobotState right_arm_;
         RobotState left_arm_;

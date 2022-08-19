@@ -12,14 +12,14 @@
   <color rgba="0.700 0.700 0.700 1.000"/>
 </material>
 
-<!-- <link name="base_link">
+<link name="base_link">
 </link>
 
 <joint name="base_footprint_joint" type="fixed">
-  <origin rpy="0 0 0" xyz="0 0 0"/>
+  <origin rpy="0 0 0" xyz="0 0.5 0"/>
   <parent link="base_link"/>
-  <child link="R0v2_1"/>
-</joint> -->
+  <child link="L0v2_1"/>
+</joint>
 
 <link name="L0v2_1">
   <inertial>

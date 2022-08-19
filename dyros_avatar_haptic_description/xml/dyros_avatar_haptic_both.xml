@@ -5,10 +5,10 @@
 
     <default>
         <default class="prismatic_friction_joint">
-            <joint damping="1.0" frictionloss="30.0"/>
+            <joint damping="1.0" frictionloss="3.0"/>
         </default>
         <default class="friction_joint">
-            <joint damping="1.0" frictionloss="3.0"/>
+            <joint damping="1.0" frictionloss="1.0"/>
         </default>
     </default>
 

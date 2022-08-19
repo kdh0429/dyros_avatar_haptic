@@ -20,6 +20,11 @@ DyrosAvatarHapticController::DyrosAvatarHapticController(ros::NodeHandle &nh, Da
     std::cout<<"Left Robot Model name: " << urdf_name <<std::endl;
     RigidBodyDynamics::Addons::URDFReadFromFile(urdf_name.c_str(), &left_arm_.robot_model_, false, false);
 
+    // FT Callback
+    ft_sub_ = nh.subscribe("/tocabi/hand_ftsensors", 1, &DyrosAvatarHapticController::FTCallback, this, ros::TransportHints().tcpNoDelay(true));
+    right_arm_.hand_pub_ = nh.advertise<tocabi_msgs::matrix_3_4>("/TRACKER5HAPTIC", 100);
+    left_arm_.hand_pub_ = nh.advertise<tocabi_msgs::matrix_3_4>("/TRACKER3HAPTIC", 100);
+
     // Keyboard
     init_keyboard();
 
@@ -28,6 +33,16 @@ DyrosAvatarHapticController::DyrosAvatarHapticController(ros::NodeHandle &nh, Da
 DyrosAvatarHapticController::~DyrosAvatarHapticController()
 {
 
+}
+
+
+void DyrosAvatarHapticController::FTCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    for (int i = 0; i <6; i++)
+    {
+        right_arm_.F_d_(i) = msg->data[i];
+        left_arm_.F_d_(i) = msg->data[i+6];
+    }
 }
 
 void DyrosAvatarHapticController::compute()
@@ -182,6 +197,27 @@ void DyrosAvatarHapticController::updateKinematicsDynamics()
         robot->Lambda_ = (robot->j_ * robot->A_.inverse() * robot->j_.transpose()).inverse();Eigen::Matrix<double, 6,6> I;
         I.setIdentity();
         robot->j_dyn_cons_inv_T_ = (robot->j_*robot->A_.inverse()*robot->j_.transpose() + 0.001*I).inverse() * robot->j_ * robot->A_.inverse();
+
+        // ROS MSG
+        robot->hand_msg_.firstRow.resize(4);
+        robot->hand_msg_.firstRow[0] = robot->x_.linear()(0,0);
+        robot->hand_msg_.firstRow[1] = robot->x_.linear()(0,1);
+        robot->hand_msg_.firstRow[2] = robot->x_.linear()(0,2);
+        robot->hand_msg_.firstRow[3] = robot->x_.translation()(0);
+
+        robot->hand_msg_.secondRow.resize(4);
+        robot->hand_msg_.secondRow[0] = robot->x_.linear()(1,0);
+        robot->hand_msg_.secondRow[1] = robot->x_.linear()(1,1);
+        robot->hand_msg_.secondRow[2] = robot->x_.linear()(1,2);
+        robot->hand_msg_.secondRow[3] = robot->x_.translation()(1);
+
+        robot->hand_msg_.thirdRow.resize(4);
+        robot->hand_msg_.thirdRow[0] = robot->x_.linear()(2,0);
+        robot->hand_msg_.thirdRow[1] = robot->x_.linear()(2,1);
+        robot->hand_msg_.thirdRow[2] = robot->x_.linear()(2,2);
+        robot->hand_msg_.thirdRow[3] = robot->x_.translation()(2);
+
+        robot->hand_pub_.publish(robot->hand_msg_);
     }
 }
 
@@ -206,17 +242,16 @@ void DyrosAvatarHapticController::computeControlInput()
         for (auto &robot: robots_)
         {
             double traj_duration = 2.0;
-            robot->F_d_.setZero();
-            robot->F_d_(0) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, 0.0, 10.0, 0.0, 0.0);
 
             Eigen::Vector6d F_;
-            robot->F_I_ = robot->F_I_ + robot->ki_force_*(robot->F_d_ - robot->residual_mob_) / hz_;
+            robot->F_I_ = robot->F_I_ + robot->ki_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) / hz_;
             // Integral Anti-Windup(saturation)
             for (int i = 0; i <6; i++)
             {
                 minmax_cut(robot->F_I_(i), -10.0, 10.0);
             }
-            F_ = robot->kp_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) + robot->F_I_;
+            // F_ = robot->kp_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) + robot->F_I_;
+            F_ = robot->F_d_;
 
             robot->control_input_ = robot->j_.transpose()*F_ + robot->non_linear_;
         }
