@@ -62,6 +62,8 @@ void DyrosAvatarHapticController::compute()
                     robot->j_temp_.setZero();
                     robot->j_.resize(6, dof_);
                     robot->j_.setZero();
+                    robot->j_dyn_cons_inv_T_.resize(dof_, 6);
+                    robot->j_dyn_cons_inv_T_.setZero();
 
                     robot->non_linear_.resize(dof_);
                     robot->non_linear_.setZero();
@@ -177,7 +179,9 @@ void DyrosAvatarHapticController::updateKinematicsDynamics()
         robot->C_ = getC(robot->q_, robot->q_dot_, robot->robot_model_);
         robot->C_T_ = robot->C_.transpose();
 
-        robot->Lambda_ = (robot->j_ * robot->A_.inverse() * robot->j_.transpose()).inverse();
+        robot->Lambda_ = (robot->j_ * robot->A_.inverse() * robot->j_.transpose()).inverse();Eigen::Matrix<double, 6,6> I;
+        I.setIdentity();
+        robot->j_dyn_cons_inv_T_ = (robot->j_*robot->A_.inverse()*robot->j_.transpose() + 0.001*I).inverse() * robot->j_ * robot->A_.inverse();
     }
 }
 
@@ -212,7 +216,7 @@ void DyrosAvatarHapticController::computeControlInput()
             {
                 minmax_cut(robot->F_I_(i), -10.0, 10.0);
             }
-            F_ = robot->kp_force_*(robot->F_d_ - robot->residual_mob_) + robot->F_I_;
+            F_ = robot->kp_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) + robot->F_I_;
 
             robot->control_input_ = robot->j_.transpose()*F_ + robot->non_linear_;
         }

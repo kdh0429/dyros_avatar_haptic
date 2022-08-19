@@ -68,10 +68,6 @@ class DyrosAvatarHapticController{
             Eigen::Vector6d q_dot_;
             Eigen::Vector6d effort_;
 
-            Eigen::Isometry3d x_;
-            Eigen::Vector6d x_dot_;
-            Eigen::MatrixXd j_temp_;
-            Eigen::MatrixXd j_;
 
             // Control
             Eigen::Vector6d q_ddot_desired_;
@@ -102,6 +98,11 @@ class DyrosAvatarHapticController{
             Eigen::MatrixXd C_;
             Eigen::MatrixXd C_T_;
             Eigen::VectorXd g_;
+            Eigen::Isometry3d x_;
+            Eigen::Vector6d x_dot_;
+            Eigen::MatrixXd j_temp_;
+            Eigen::MatrixXd j_;
+            Eigen::MatrixXd j_dyn_cons_inv_T_;
             
             Eigen::MatrixXd Lambda_;
 
