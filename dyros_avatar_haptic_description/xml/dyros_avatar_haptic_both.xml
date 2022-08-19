@@ -138,7 +138,7 @@
     </actuator>
 
     <keyframe>
-        <key name="front" time="0" qpos ="0.1 0.8 -1.6 0.8 0.0 -1.57
-                                        0.1 0.8 1.6 -0.8 0.0 1.57"/>
+        <key name="front" time="0" qpos ="0.0 0.8 -1.6 0.8 0.0 -1.57
+                                        0.0 0.8 1.6 -0.8 0.0 1.57"/>
     </keyframe>
 </mujoco>

@@ -62,10 +62,10 @@ void DyrosAvatarHapticController::compute()
                 for (auto &robot: robots_)
                 {
                     if (robot->id_.compare("right_arm") == 0){
-                        robot->q_init_ << 0.1, 0.8, -1.6, 0.8, 0.0, -1.57;
+                        robot->q_init_ << 0.0, 0.8, -1.6, 0.8, 0.0, -1.57;
                     }
                     else{
-                        robot->q_init_ << 0.1, 0.8, 1.6, -0.8, 0.0, 1.57;
+                        robot->q_init_ << 0.0, 0.8, 1.6, -0.8, 0.0, 1.57;
                     }
 
                     robot->kp.setZero();
@@ -90,6 +90,9 @@ void DyrosAvatarHapticController::compute()
                     robot->C_T_.setZero();
                     robot->Lambda_.resize(6,6);
                     robot->Lambda_.setZero();
+
+                    robot->F_d_.setZero();
+                    robot->F_I_.setZero();
 
                     // MOB
                     robot->integral_term_mob_.setZero();
@@ -138,13 +141,14 @@ void DyrosAvatarHapticController::compute()
                     robot->x_mode_init_ = robot->x_;
                     robot->control_input_init_ = robot->control_input_;
                         
+                    robot->F_d_.setZero();
                     robot->F_I_.setZero();
 
                     robot->integral_term_mob_.setZero();
                     robot->residual_mob_.setZero();
                 }
 
-                std::cout << "Mode Changed to: ";   //   f:102, h: 104, s: 115
+                std::cout << "Mode Changed to: ";   //   f:102, h: 104, s: 115 t: 116
                 switch(mode_)
                 {
                     case(102):
@@ -152,6 +156,9 @@ void DyrosAvatarHapticController::compute()
                         break;
                     case(104):
                         std::cout << "Home Pose" << std::endl;
+                        break;
+                    case(116):
+                        std::cout << "Stretch" << std::endl;
                         break;
                     case(115):
                         std::cout << "Stop" << std::endl;
@@ -244,16 +251,38 @@ void DyrosAvatarHapticController::computeControlInput()
             double traj_duration = 2.0;
 
             Eigen::Vector6d F_;
-            robot->F_I_ = robot->F_I_ + robot->ki_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) / hz_;
-            // Integral Anti-Windup(saturation)
-            for (int i = 0; i <6; i++)
-            {
-                minmax_cut(robot->F_I_(i), -10.0, 10.0);
-            }
+            F_.setZero();
+            // robot->F_I_ = robot->F_I_ + robot->ki_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) / hz_;
+            // // Integral Anti-Windup(saturation)
+            // for (int i = 0; i <6; i++)
+            // {
+            //     minmax_cut(robot->F_I_(i), -10.0, 10.0);
+            // }
             // F_ = robot->kp_force_*(robot->F_d_ - robot->j_dyn_cons_inv_T_*robot->residual_mob_) + robot->F_I_;
             F_ = robot->F_d_;
 
             robot->control_input_ = robot->j_.transpose()*F_ + robot->non_linear_;
+        }
+    }
+    else if (mode_ == MODE_STRETCH)
+    {
+        double traj_duration = 5.0;
+
+        for (auto &robot: robots_)
+        {        
+            Eigen::Vector6d q_target;
+            if (robot->id_.compare("right_arm") == 0){
+                q_target << 0.0, 0.2, -0.4, 0.2, 0.0, -1.57;
+            }
+            else{
+                q_target << 0.0, 0.2, 0.4, -0.2, 0.0, 1.57;
+            }
+            for (int i = 0; i < dof_; i++)
+            {
+                robot->q_desired_(i) = cubic(cur_time_, mode_init_time_, mode_init_time_+traj_duration, robot->q_mode_init_(i), q_target(i), 0.0, 0.0);
+                robot->q_dot_desired_(i) = cubicDot(cur_time_, mode_init_time_, mode_init_time_+traj_duration, robot->q_mode_init_(i), q_target(i), 0.0, 0.0);
+            }
+            robot->control_input_ = robot->kp * (robot->q_desired_ - robot->q_) +  robot->kv * (robot->q_dot_desired_ - robot->q_dot_) + robot->non_linear_;
         }
     }
     else if (mode_ == MODE_STOP)

@@ -24,6 +24,7 @@
 # define MODE_FORCE 102
 # define MODE_HOME 104
 # define MODE_STOP 115
+# define MODE_STRETCH 116
 
 class DyrosAvatarHapticController{
     public:
