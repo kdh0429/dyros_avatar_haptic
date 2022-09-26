@@ -62,10 +62,10 @@ void DyrosAvatarHapticController::compute()
                 for (auto &robot: robots_)
                 {
                     if (robot->id_.compare("right_arm") == 0){
-                        robot->q_init_ << 0.0, 0.8, -1.6, 0.8, 0.0, -1.57;
+                        robot->q_init_ << 0.0, -0.8, 1.6, -0.8, 0.0, -1.57;
                     }
                     else{
-                        robot->q_init_ << 0.0, 0.8, 1.6, -0.8, 0.0, 1.57;
+                        robot->q_init_ << 0.0, 0.8, -1.6, 0.8, 0.0, 1.57;
                     }
 
                     robot->kp.setZero();
@@ -272,10 +272,10 @@ void DyrosAvatarHapticController::computeControlInput()
         {        
             Eigen::Vector6d q_target;
             if (robot->id_.compare("right_arm") == 0){
-                q_target << 0.0, 0.2, -0.4, 0.2, 0.0, -1.57;
+                q_target << 0.0, -0.2, 0.4, -0.2, 0.0, -1.57;
             }
             else{
-                q_target << 0.0, 0.2, 0.4, -0.2, 0.0, 1.57;
+                q_target << 0.0, 0.2, -0.4, 0.2, 0.0, 1.57;
             }
             for (int i = 0; i < dof_; i++)
             {
