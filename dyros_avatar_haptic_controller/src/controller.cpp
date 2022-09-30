@@ -62,10 +62,10 @@ void DyrosAvatarHapticController::compute()
                 for (auto &robot: robots_)
                 {
                     if (robot->id_.compare("right_arm") == 0){
-                        robot->q_init_ << 0.0, -0.8, 1.6, -0.8, 0.0, -1.57;
+                        robot->q_init_ << 0.0, 0.8, -1.6, -0.8, 0.0, 0.0;
                     }
                     else{
-                        robot->q_init_ << 0.0, 0.8, -1.6, 0.8, 0.0, 1.57;
+                        robot->q_init_ << 0.0, -0.8, 1.6, 0.8, 0.0, 0.0;
                     }
 
                     robot->kp.setZero();
