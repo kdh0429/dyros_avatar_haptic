@@ -1,0 +1,141 @@
+<mujoco model="dyros_avatar_haptic">    
+    <option timestep='0.0005' iterations="50" tolerance="1e-5" solver="Newton" jacobian="dense" cone="elliptic" noslip_iterations="30" noslip_tolerance="1e-5"/>
+    <compiler angle="radian" meshdir="../meshes/" />
+    <size njmax="500" nconmax="100" />
+
+    <default>
+        <default class="prismatic_friction_joint">
+            <joint damping="1.0" frictionloss="3.0"/>
+        </default>
+        <default class="friction_joint">
+            <joint damping="1.0" frictionloss="1.0"/>
+        </default>
+    </default>
+
+    <asset>
+        <mesh name="R0v2_1_reduced" file="R0v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R1v2_1_reduced" file="R1v2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R2_Newv6_1_reduced" file="R2_Newv6_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R3_Newv2_1_reduced" file="R3_Newv2_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R4v1_1_reduced" file="R4v1_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R5v3_1_reduced" file="R5v3_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="R6v1_1" file="R6v1_1.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L0v1_1_reduced" file="L0v1_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L1v4_1_reduced" file="L1v4_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L2_Newv4_1_reduced" file="L2_Newv4_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L3_Newv3_1_reduced" file="L3_Newv3_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L4v5_1_reduced" file="L4v5_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L5v6_1_reduced" file="L5v6_1_reduced.stl" scale="0.001 0.001 0.001" />
+        <mesh name="L6v5_1" file="L6v5_1.stl" scale="0.001 0.001 0.001" />
+
+        <material name='MatPlane' reflectance='0.3' />
+    </asset>
+    <worldbody>        
+        <geom name="ground" type="plane" pos="0 0 0" size="30 30 .05" rgba="0.7 0.6 0.5 1" material="MatPlane" group="3"/>      
+        <light directional="true" diffuse=".8 .8 .8" pos="0 0 10" dir="0 0 -10"/>
+        <light directional="true" diffuse=".5 .5 .5" pos="10 0 0" dir="-10 0 0"/>
+
+        <body name="R0v2_1" pos="0 -0.5 0.0">
+            <inertial pos="-0.022028950404034714 0.05827830226084305 0.44607097962097164" quat="1.0 0 0 0" mass="54.47494543793283" fullinertia="17.852652 18.178648 1.124692 -0.098729 -0.067986 -0.126587" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R0v2_1_reduced" />
+            <body name="R1v2_1" pos="0 0.0 0.4787">
+                <inertial pos="0.0717487 0.0574826 0.104255" quat="0.647885 0.174867 0.191983 0.716107" mass="9.60061" diaginertia="0.22996 0.208538 0.0412995" />
+                <joint name="R_Pris1" pos="0 0 0" axis="0 0 1" type="slide" limited="true" range="-3.14159 3.14159" class="prismatic_friction_joint"/>
+                <geom pos="0 0 -0.4787" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R1v2_1_reduced" />
+                <geom pos="0 0 -0.4787" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R1v2_1_reduced" />
+                <body name="R2v2_1" pos="0.258548 0.0640394 0.2868">
+                    <inertial pos="0.236668 -0.041912 0.00277087" quat="0.553278 0.478206 0.519761 0.441646" mass="3.48186" diaginertia="0.0413472 0.04014 0.00486782" />
+                    <joint name="R_Rev2" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                    <geom pos="-0.258548 -0.0640394 -0.7655" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R2_Newv6_1_reduced" />
+                    <geom pos="-0.258548 -0.0640394 -0.7655" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R2_Newv6_1_reduced" />
+                    <body name="R3v2_1" pos="0.346989 -0.0450813 0.0545">
+                        <inertial pos="0.203602 0.126816 0.0226582" quat="-0.266216 0.645598 0.266513 0.664306" mass="2.29858" diaginertia="0.0317415 0.0304506 0.00416189" />
+                        <joint name="R_Rev3" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                        <geom pos="-0.605537 -0.0189581 -0.82" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R3_Newv2_1_reduced" />
+                        <geom pos="-0.605537 -0.0189581 -0.82" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R3_Newv2_1_reduced" />
+                        <body name="R4v1_1" pos="0.249803 0.185226 -0.0103">
+                            <inertial pos="0.0109076 -0.127757 -0.377261" quat="0.998493 -0.0439834 -0.0216181 -0.0246868" mass="2.66166" diaginertia="0.573923 0.569892 0.00590726" />
+                            <joint name="R_Rev4" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                            <geom pos="-0.855341 -0.204185 -0.8097" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R4v1_1_reduced" />
+                            <geom pos="-0.855341 -0.204185 -0.8097" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R4v1_1_reduced" />
+                            <body name="R5v3_1" pos="-9.61814e-05 -0.0877749 -0.156075">
+                                <inertial pos="0.00347821 0.0718146 0.0123912" quat="0.667082 0.258954 -0.359381 0.598991" mass="1.64998" diaginertia="0.00367065 0.00325685 0.0025555" />
+                                <joint name="R_Rev5" pos="0 0 0" axis="0.00109577 -0.999999 0" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                                <geom pos="-0.855244 -0.11641 -0.653625" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R5v3_1_reduced" />
+                                <geom pos="-0.855244 -0.11641 -0.653625" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R5v3_1_reduced" />
+                                <body name="R6v1_1" pos="-0.0379044 0.0872416 0">
+                                    <inertial pos="0.0265991 0.00616031 -0.0453767" quat="-0.235433 0.833026 -0.0365204 0.499305" mass="0.290033" diaginertia="0.000343672 0.000319344 0.000125984" />
+                                    <joint name="R_Rev6" pos="0 0 0" axis="0.999999 -0.00109577 0" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                                    <geom pos="-0.81734 -0.203651 -0.653625" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="R6v1_1" />
+                                    <geom pos="-0.81734 -0.203651 -0.653625" type="mesh" rgba="0.7 0.7 0.7 1" mesh="R6v1_1" />
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+
+        <body name="L0v2_1" pos="0 0.5 0.0">
+            <inertial pos="-0.05396861611301294 -0.03632116085286392 0.46986294658671324" quat="1.0 0 0 0" mass="83.96706134148887" fullinertia="24.453447 25.002911 1.749241 0.350866 0.742595 -1.055886" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L0v1_1_reduced" />
+            <body name="L1v4_1" pos="-3e-06 0.0 0.4787">
+                <inertial pos="0.0741497 -0.057367 0.10445" quat="0.709964 0.206145 0.184051 0.64775" mass="9.31131" diaginertia="0.214559 0.192957 0.0403374" />
+                <joint name="L_Pris1" pos="0 0 0" axis="0 0 1" type="slide" limited="true" range="-3.14159 3.14159" class="prismatic_friction_joint" />
+                <geom pos="3e-06 0 -0.4787" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L1v4_1_reduced" />
+                <geom pos="3e-06 0 -0.4787" type="mesh" rgba="0.7 0.7 0.7 1" mesh="L1v4_1_reduced" />
+                <body name="L2v2_1" pos="0.25847 -0.0642219 0.2763">
+                    <inertial pos="0.243163 0.0421423 0.00315907" quat="0.447306 0.516435 0.478716 0.551401" mass="3.60567" diaginertia="0.0421592 0.0409156 0.00504519" />
+                    <joint name="L_Rev2" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                    <geom pos="-0.258467 0.0642219 -0.755" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L2_Newv4_1_reduced" />
+                    <geom pos="-0.258467 0.0642219 -0.755" type="mesh" rgba="0.7 0.7 0.7 1" mesh="L2_Newv4_1_reduced" />
+                    <body name="L3v2_1" pos="0.347116 0.0448363 0.0545">
+                        <inertial pos="0.204488 -0.127611 0.0206633" quat="0.325362 0.658484 -0.213292 0.64424" mass="2.2621" diaginertia="0.0307045 0.029433 0.0041195" />
+                        <joint name="L_Rev3" pos="0 0 0" axis="0 0 -1" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                        <geom pos="-0.605583 0.0193856 -0.8095" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L3_Newv3_1_reduced" />
+                        <geom pos="-0.605583 0.0193856 -0.8095" type="mesh" rgba="0.7 0.7 0.7 1" mesh="L3_Newv3_1_reduced" />
+                        <body name="L4v5_1" pos="0.249512 -0.185618 -0.0103">
+                            <inertial pos="0.0726927 0.17107 -0.331563" quat="0.967407 0.118063 -0.171448 0.144186" mass="2.66166" diaginertia="0.468793 0.467788 0.00664249" />
+                            <joint name="L_Rev4" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                            <geom pos="-0.855095 0.205003 -0.7992" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L4v5_1_reduced" />
+                            <geom pos="-0.855095 0.205003 -0.7992" type="mesh" rgba="0.7 0.7 0.7 1" mesh="L4v5_1_reduced" />
+                            <body name="L5v6_1" pos="4.14007e-05 0.087775 -0.156075">
+                                <inertial pos="0.00395852 -0.0718401 0.0123912" quat="0.249815 0.667452 -0.597344 0.367806" mass="1.64998" diaginertia="0.00367351 0.0032643 0.0025522" />
+                                <joint name="L_Rev5" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                                <geom pos="-0.855137 0.117228 -0.643125" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L5v6_1_reduced" />
+                                <geom pos="-0.855137 0.117228 -0.643125" type="mesh" rgba="0.7 0.7 0.7 1" mesh="L5v6_1_reduced" />
+                                <body name="L6v5_1" pos="-0.0372411 -0.0871824 0">
+                                    <inertial pos="0.0265953 0.00617691 -0.0453767" quat="-0.237082 0.832131 -0.0374919 0.499944" mass="0.290033" diaginertia="0.000342861 0.000319494 0.000126645" />
+                                    <joint name="L_Rev6" pos="0 0 0" axis="1 0 0" limited="true" range="-3.14159 3.14159" class="friction_joint"/>
+                                    <geom pos="-0.817896 0.204411 -0.643125" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="L6v5_1" />
+                                    <geom pos="-0.817896 0.204411 -0.643125" type="mesh" rgba="0.7 0.7 0.7 1" mesh="L6v5_1" />
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+
+    <actuator>
+        <motor name="R_Prismatic1" joint="R_Pris1" ctrlrange="-500 500"/>
+        <motor name="R_Revolute2" joint="R_Rev2" ctrlrange="-100 100"/>
+        <motor name="R_Revolute3" joint="R_Rev3" ctrlrange="-100 100"/>
+        <motor name="R_Revolute4" joint="R_Rev4" ctrlrange="-100 100"/>
+        <motor name="R_Revolute5" joint="R_Rev5" ctrlrange="-100 100"/>
+        <motor name="R_Revolute6" joint="R_Rev6" ctrlrange="-100 100"/>
+
+        <motor name="L_Prismatic1" joint="L_Pris1" ctrlrange="-500 500"/>
+        <motor name="L_Revolute2" joint="L_Rev2" ctrlrange="-100 100"/>
+        <motor name="L_Revolute3" joint="L_Rev3" ctrlrange="-100 100"/>
+        <motor name="L_Revolute4" joint="L_Rev4" ctrlrange="-100 100"/>
+        <motor name="L_Revolute5" joint="L_Rev5" ctrlrange="-100 100"/>
+        <motor name="L_Revolute6" joint="L_Rev6" ctrlrange="-100 100"/>
+    </actuator>
+
+    <keyframe>
+        <key name="front" time="0" qpos ="0.0 0.0 0.0 0.0 0.0 0.0
+                                        0.0 0.0 0.0 0.0 0.0 0.0"/>
+    </keyframe>
+</mujoco>
